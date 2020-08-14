@@ -1,4 +1,7 @@
 #DSC/BuildOutput/*
+DSC/BuildOutput/MOF/*
+DSC/BuildOutput/RSOP/*
+DSC/BuildOutput/MetaMOF/*
 
 #DSC/DscConfigurations/*
 #DSC/DscResources/*
