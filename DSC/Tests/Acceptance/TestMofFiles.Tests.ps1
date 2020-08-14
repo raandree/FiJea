@@ -6,8 +6,6 @@ if ($global:Filter -and $global:Filter.ToString() -and -not $Filter.ToString())
 
 $datumDefinitionFile = Join-Path $here ..\..\DscConfigData\Datum.yml
 $nodeDefinitions = Get-ChildItem $here\..\..\DscConfigData\AllNodes -Recurse -Include *.yml
-$environments = (Get-ChildItem $here\..\..\DscConfigData\AllNodes -Directory).BaseName
-$roleDefinitions = Get-ChildItem $here\..\..\DscConfigData\Roles -Recurse -Include *.yml
 $datum = New-DatumStructure -DefinitionFile $datumDefinitionFile
 $configurationData = Get-FilteredConfigurationData -Filter $Filter -Environment $environment -Datum $datum -CurrentJobNumber $currentJobNumber -TotalJobCount $totalJobCount
 

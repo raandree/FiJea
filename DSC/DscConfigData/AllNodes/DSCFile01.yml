@@ -1,0 +1,72 @@
+NodeName: DSCFile01
+Description: File Server in Dev
+
+Configurations:
+  - JeaEndpoints
+  - JeaRoles
+
+JeaEndpoints:
+  EndPoints:
+    - Name: Test1
+      Ensure: Present
+      RoleDefinitions:
+        contoso\Domain Users:
+          RoleCapabilities: Get1
+        contoso\Domain Admins:
+          RoleCapabilities: Set1
+      SessionType: RestrictedRemoteServer
+      VisibleProviders: FileSystem
+      VisibleFunctions: 
+      - Get-Random
+      - Get-Date
+      
+    - Name: SystemManagement
+      Ensure: Present
+      RoleDefinitions:
+        Everyone:
+          RoleCapabilities:
+          - FileManagement
+          - NetworkManagement
+          - MachineManagement
+      SessionType: RestrictedRemoteServer
+
+JeaRoles:
+  Roles:
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\Get1.psrc
+      VisibleCmdlets: Get-Content
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\Set1.psrc
+      VisibleCmdlets:
+      - Set-Content
+      - Out-File
+      VisibleExternalCommands:
+      - C:\Windows\System32\whoami.exe
+      - C:\Windows\System32\ipconfig.exe
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\FileManagement.psrc
+      VisibleCmdlets: 
+      - '*-Item*'
+      VisibleExternalCommands:
+      - C:\Windows\System32\tree.com
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\MachineManagement.psrc
+      VisibleCmdlets: 
+      - Test-Connection
+      - Name: Restart-Computer
+        Parameters:
+          Name: ComputerName
+          ValidatePattern: VDI\d+
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\NetworkManagement.psrc
+      ModulesToImport: NetAdapter
+      VisibleCmdlets: 
+      - '*-NetAdapter*'
+      VisibleExternalCommands:
+      - C:\Windows\System32\ipconfig.exe
+
+PSDscAllowPlainTextPassword: True
+PSDscAllowDomainUser: True
+
+LcmConfig:
+  Settings:
+    RefreshMode: Push
