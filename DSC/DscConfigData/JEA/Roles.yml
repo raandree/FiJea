@@ -1,0 +1,61 @@
+Configurations:
+  - JeaRoles
+
+JeaRoles:
+  Roles:
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ReadEventLog.psrc
+      VisibleCmdlets:
+      - Name: Get-EventLog
+        Parameters:
+        - Name: List
+        - Name: LogName
+        - Name: Newest
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\DiskInfo.psrc
+      VisibleCmdlets:
+      - Storage\Get-*
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceInfo.psrc
+      VisibleCmdlets:
+      - Name: Get-Service
+        Parameters:
+        - Name: Name
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceManagement.psrc
+      VisibleCmdlets:
+      - '*-Service'
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\FileManagement.psrc
+      VisibleCmdlets: 
+      - '*-Item*'
+      VisibleExternalCommands:
+      - C:\Windows\System32\tree.com
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\MachineManagement.psrc
+      VisibleCmdlets: 
+      - Test-Connection
+      - Name: Restart-Computer
+        Parameters:
+          Name: ComputerName
+          ValidatePattern: VDI\d+
+      VisibleFunctions:
+      - F1
+      - F2
+      FunctionDefinitions:
+      - Name: F1
+        ScriptBlock: |
+          Get-Date
+          Write-Host Hello World
+      - Name: F2
+        ScriptBlock: |
+          Get-Process | Where-Object { $_.WS -gt 100MB }
+          Dir C:\
+      #- Name: F3
+      #  FilePath: C:\Temp\JeaRoleTest.ps1
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\NetworkManagement.psrc
+      ModulesToImport: NetAdapter
+      VisibleCmdlets: 
+      - '*-NetAdapter*'
+      VisibleExternalCommands:
+      - C:\Windows\System32\ipconfig.exe

@@ -1,0 +1,29 @@
+Configurations:
+  - JeaEndpoints
+
+JeaEndpoints:
+  EndPoints:
+    - Name: Diagnostic
+      Ensure: Present
+      RoleDefinitions:
+        contoso\Domain Users:
+          RoleCapabilities:
+          - ReadEventLog
+          - DiskInfo
+          - ServiceInfo
+      SessionType: RestrictedRemoteServer
+      VisibleProviders: FileSystem
+      VisibleFunctions: 
+      - Get-Random
+      - Get-Date
+      
+    - Name: SystemManagement
+      Ensure: Present
+      RoleDefinitions:
+        Administrators:
+          RoleCapabilities:
+          - FileManagement
+          - NetworkManagement
+          - MachineManagement
+          - ServiceManagement
+      SessionType: RestrictedRemoteServer
