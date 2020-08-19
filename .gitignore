@@ -2,6 +2,7 @@
 DSC/BuildOutput/MOF/*
 DSC/BuildOutput/RSOP/*
 DSC/BuildOutput/MetaMOF/*
+DSC/BuildOutput/Logs/*
 
 #DSC/DscConfigurations/*
 #DSC/DscResources/*
