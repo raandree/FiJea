@@ -3,6 +3,7 @@ DSC/BuildOutput/MOF/*
 DSC/BuildOutput/RSOP/*
 DSC/BuildOutput/MetaMOF/*
 DSC/BuildOutput/Logs/*
+DSC/BuildOutput/*Test*.xml
 
 #DSC/DscConfigurations/*
 #DSC/DscResources/*
