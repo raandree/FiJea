@@ -22,6 +22,7 @@ New-UDDashboard -Title "JeaTabs" -Content {
                 #} -ArgumentList $endpoint.Name, $user
                 # LOCAL DEV MODE
                 $session:tasks = Get-Command -Name Set-Content -CommandType Cmdlet | Where-Object { $_.Parameters } | Select-Object -First 550 -Property Name, Parameters, CommandType
+                Start-Sleep -Seconds 5 #Retrieving the capabilities from the JEA endpoints can take some seconds
 
                 New-UDDynamic -Id dyn1 -Content {
                     $columns = @(
