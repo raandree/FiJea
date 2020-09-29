@@ -52,13 +52,15 @@ JeaEndpoints:
       SessionType: RestrictedRemoteServer
 
     - Name: JeaDemo2
-      GroupManagedServiceAccount: contoso\GMSA1
+      GroupManagedServiceAccount: contoso\GMSA2
       Ensure: Present
       RoleDefinitions:
         contoso\Domain Users:
           RoleCapabilities:
           - Demo1
+          - Demo2
         contoso\Domain Computers:
           RoleCapabilities:
           - Demo1
+          - Demo2
       SessionType: RestrictedRemoteServer
