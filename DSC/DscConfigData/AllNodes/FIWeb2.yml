@@ -1,0 +1,8 @@
+NodeName: FI2Web1
+
+PSDscAllowPlainTextPassword: True
+PSDscAllowDomainUser: True
+
+LcmConfig:
+  Settings:
+    RefreshMode: Push

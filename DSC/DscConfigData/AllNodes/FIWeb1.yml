@@ -1,5 +1,4 @@
-NodeName: TestServer1
-Description: File Server in Dev
+NodeName: FI2Web2
 
 PSDscAllowPlainTextPassword: True
 PSDscAllowDomainUser: True
