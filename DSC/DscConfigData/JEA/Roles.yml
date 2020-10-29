@@ -168,11 +168,14 @@ JeaRoles:
       - Name: Set-xContent1
         ScriptBlock: |
           param (
-              [Parameter(Mandatory)]
-              [object[]]$Value,
+            [Parameter()]
+            [object[]]$Value = 'Test',
 
-              [Parameter(Mandatory)]
-              [string]$Path
+            [Parameter(Mandatory, ParameterSetName = 'Path')]
+            [string]$Path,
+
+            [Parameter(Mandatory, ParameterSetName = 'LiteralPath')]
+            [string]$LiteralPath
           )
 
           Set-Content @PSBoundParameters
