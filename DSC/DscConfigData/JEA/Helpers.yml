@@ -1,0 +1,42 @@
+Configurations:
+- FilesAndFolders
+
+FilesAndFolders:
+  Items:
+    - DestinationPath: "C:\\Program Files\\WindowsPowerShell\\Modules\\JeaDiscovery\\JeaDiscovery.psm1"
+      Type: File
+      Contents: |
+        function Get-ModuleWithRoleCapabilities {
+          param(
+              $BasePath = ($env:PSModulePath -split ';' | Where-Object { $_ -like '*Program Files*'})
+          )
+
+          dir -Path $BasePath | Where-Object { dir -Path $_.FullName | Where-Object { $_.Name -eq 'RoleCapabilities' } } | ForEach-Object {
+              [pscustomobject]@{
+                  Name = $_.BaseName
+                  ModuleBase = $_.FullName
+                  RoleCapabilities = (dir -Path "$($_.FullName)\RoleCapabilities")
+              }
+          }
+        }
+
+        function Get-PSRoleCapability {
+          param (
+              [Parameter(Mandatory)]
+              [string[]]$ModuleBasePath
+          )
+
+          $moduleName = Split-Path -Path $ModuleBasePath -Leaf
+          $psrcFiles = dir -Path "$ModuleBasePath\RoleCapabilities" -Filter *.psrc
+          
+          foreach ($psrcFile in $psrcFiles) {
+              $h = [ordered]@{}
+              $h.Add('ModuleName', $moduleName)
+              $h.Add('RoleName', $psrcFile.BaseName)
+              
+              (Import-PowerShellDataFile -Path $psrcFile.FullName).GetEnumerator() | ForEach-Object {
+                  $h.Add($_.Key, $_.Value)
+              }
+              [pscustomobject]$h
+          }
+        }
