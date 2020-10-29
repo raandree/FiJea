@@ -161,8 +161,7 @@ if (-not $Tasks) {
     LoadDatumConfigData,
     CompileDatumRsop,
     TestDscResources,
-    CompileRootConfiguration,
-    CompileRootMetaMof
+    CompileRootConfiguration
 }
 else {
     task . $Tasks
