@@ -1,0 +1,11 @@
+﻿New-PSUDashboard -Name "_JeaMenu" -FilePath "_JeaMenu.ps1" -BaseUrl "/_JeaMenu" -Framework "UniversalDashboard:3.2.0"
+New-PSUDashboard -Name "_JeaTask" -FilePath "_JeaTask.ps1" -BaseUrl "/_JeaTask" -Framework "UniversalDashboard:3.2.0"
+
+#New-PSUDashboard -Name "Test1" -FilePath "Test1.ps1" -BaseUrl "/Test1" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "Test2" -FilePath "Test2.ps1" -BaseUrl "/Test2" -Framework "UniversalDashboard:3.2.0"
+New-PSUDashboard -Name "JeaTabs" -FilePath "JeaTabs.ps1" -BaseUrl "/JeaTabs" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "Jea1" -FilePath "Jea1.ps1" -BaseUrl "/Jea1" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "Jea2" -FilePath "Jea2.ps1" -BaseUrl "/Jea2" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "Jea3" -FilePath "Jea3.ps1" -BaseUrl "/Jea3" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "Wait" -FilePath "Wait.ps1" -BaseUrl "/Wait" -Framework "UniversalDashboard:3.2.0"
+#New-PSUDashboard -Name "RequestTest" -FilePath "RequestTest.ps1" -BaseUrl "/RequestTest" -Framework "UniversalDashboard:3.2.0"
