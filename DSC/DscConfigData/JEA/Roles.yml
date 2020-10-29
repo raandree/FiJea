@@ -3,62 +3,62 @@ Configurations:
 
 JeaRoles:
   Roles:
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ReadEventLog.psrc
-      VisibleCmdlets:
-      - Name: Get-EventLog
-        Parameters:
-        - Name: List
-        - Name: LogName
-        - Name: Newest
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ReadEventLog.psrc
+    #  VisibleCmdlets:
+    #  - Name: Get-EventLog
+    #    Parameters:
+    #    - Name: List
+    #    - Name: LogName
+    #    - Name: Newest
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\DiskInfo.psrc
-      VisibleCmdlets:
-      - Storage\Get-*
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\DiskInfo.psrc
+    #  VisibleCmdlets:
+    #  - Storage\Get-*
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceInfo.psrc
-      VisibleCmdlets:
-      - Name: Get-Service
-        Parameters:
-        - Name: Name
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceInfo.psrc
+    #  VisibleCmdlets:
+    #  - Name: Get-Service
+    #    Parameters:
+    #    - Name: Name
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceManagement.psrc
-      VisibleCmdlets:
-      - '*-Service'
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Test\RoleCapabilities\ServiceManagement.psrc
+    #  VisibleCmdlets:
+    #  - '*-Service'
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\FileManagement.psrc
-      VisibleCmdlets: 
-      - '*-Item*'
-      VisibleExternalCommands:
-      - C:\Windows\System32\tree.com
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\FileManagement.psrc
+    #  VisibleCmdlets: 
+    #  - '*-Item*'
+    #  VisibleExternalCommands:
+    #  - C:\Windows\System32\tree.com
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\MachineManagement.psrc
-      VisibleCmdlets: 
-      - Test-Connection
-      - Name: Restart-Computer
-        Parameters:
-          Name: ComputerName
-          ValidatePattern: VDI\d+
-      VisibleFunctions:
-      - F1
-      - F2
-      FunctionDefinitions:
-      - Name: F1
-        ScriptBlock: |
-          Get-Date
-          Write-Host Hello World
-      - Name: F2
-        ScriptBlock: |
-          Get-Process | Where-Object { $_.WS -gt 100MB }
-          Dir C:\
-      #- Name: F3
-      #  FilePath: C:\Temp\JeaRoleTest.ps1
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\MachineManagement.psrc
+    #  VisibleCmdlets: 
+    #  - Test-Connection
+    #  - Name: Restart-Computer
+    #    Parameters:
+    #      Name: ComputerName
+    #      ValidatePattern: VDI\d+
+    #  VisibleFunctions:
+    #  - F1
+    #  - F2
+    #  FunctionDefinitions:
+    #  - Name: F1
+    #    ScriptBlock: |
+    #      Get-Date
+    #      Write-Host Hello World
+    #  - Name: F2
+    #    ScriptBlock: |
+    #      Get-Process | Where-Object { $_.WS -gt 100MB }
+    #      Dir C:\
+    #  #- Name: F3
+    #  #  FilePath: C:\Temp\JeaRoleTest.ps1
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\NetworkManagement.psrc
-      ModulesToImport: NetAdapter
-      VisibleCmdlets: 
-      - '*-NetAdapter*'
-      VisibleExternalCommands:
-      - C:\Windows\System32\ipconfig.exe
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Management\RoleCapabilities\NetworkManagement.psrc
+    #  ModulesToImport: NetAdapter
+    #  VisibleCmdlets: 
+    #  - '*-NetAdapter*'
+    #  VisibleExternalCommands:
+    #  - C:\Windows\System32\ipconfig.exe
     
     - Path: C:\Program Files\WindowsPowerShell\Modules\JeaDiscovery\RoleCapabilities\JeaCapability.psrc
       VisibleFunctions:
@@ -87,50 +87,50 @@ JeaRoles:
               }
           }
 
-    - Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\DemoAD.psrc
-      ModulesToImport:
-      - ActiveDirectory
-      - DnsServer
-      VisibleFunctions:
-      - New-xDnsRecord
-      - New-xAdUser
-      FunctionDefinitions:
-      - Name: New-xDnsRecord
-        ScriptBlock: |
-          param (
-              [Parameter(Mandatory)]
-              [string]$IPv4Address,
-              
-              [Parameter(Mandatory)]
-              [string]$Name,
-              
-              [Parameter(Mandatory)]
-              [string]$ZoneName,
-
-              [string]$ComputerName = 'FIDC1.contoso.com'
-          )
-          Add-DnsServerResourceRecordA @PSBoundParameters
-      - Name: New-xAdUser
-        ScriptBlock: |
-          param (
-              [Parameter()]
-              [string]$Path = "CN=Users,$((Get-ADRootDSE).defaultNamingContext)",
-              
-              [Parameter(Mandatory)]
-              [string]$Name,
-              
-              [Parameter()]
-              [string]$GivenName,
-
-              [Parameter()]
-              [string]$Surname,
-
-              [Parameter(Mandatory)]
-              [securestring]$AccountPassword
-          )
-
-          "New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname" | Out-File -FilePath C:\Commands.txt -Append
-          New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname
+    #- Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\DemoAD.psrc
+    #  ModulesToImport:
+    #  - ActiveDirectory
+    #  - DnsServer
+    #  VisibleFunctions:
+    #  - New-xDnsRecord
+    #  - New-xAdUser
+    #  FunctionDefinitions:
+    #  - Name: New-xDnsRecord
+    #    ScriptBlock: |
+    #      param (
+    #          [Parameter(Mandatory)]
+    #          [string]$IPv4Address,
+    #          
+    #          [Parameter(Mandatory)]
+    #          [string]$Name,
+    #          
+    #          [Parameter(Mandatory)]
+    #          [string]$ZoneName,
+    #
+    #          [string]$ComputerName = 'FIDC1.contoso.com'
+    #      )
+    #      Add-DnsServerResourceRecordA @PSBoundParameters
+    #  - Name: New-xAdUser
+    #    ScriptBlock: |
+    #      param (
+    #          [Parameter()]
+    #          [string]$Path = "CN=Users,$((Get-ADRootDSE).defaultNamingContext)",
+    #          
+    #          [Parameter(Mandatory)]
+    #          [string]$Name,
+    #          
+    #          [Parameter()]
+    #          [string]$GivenName,
+    #
+    #          [Parameter()]
+    #          [string]$Surname,
+    #
+    #          [Parameter(Mandatory)]
+    #          [securestring]$AccountPassword
+    #      )
+    #
+    #      "New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname" | Out-File -FilePath C:\Commands.txt -Append
+    #      New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname
 
     - Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\Demo1.psrc
       VisibleFunctions:
@@ -164,6 +164,7 @@ JeaRoles:
     - Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\Demo2.psrc
       VisibleFunctions:
       - Set-xContent1
+      - Get-ParamSetTest
       FunctionDefinitions:
       - Name: Set-xContent1
         ScriptBlock: |
@@ -179,3 +180,31 @@ JeaRoles:
           )
 
           Set-Content @PSBoundParameters
+      - Name: Get-ParamSetTest
+        ScriptBlock: |
+          [CmdletBinding(DefaultParameterSetName = 'ps1')]
+          param (
+            [Parameter()]
+            [object[]]$P0 = 'Test',
+
+            [Parameter(Mandatory, ParameterSetName = 'PS1')]
+            [string]$P10,
+
+            [Parameter(Mandatory, ParameterSetName = 'PS1')]
+            [string]$P11,
+
+            [Parameter(Mandatory, ParameterSetName = 'PS2')]
+            [string]$P20,
+
+            [Parameter(ParameterSetName = 'PS2')]
+            [string]$P21,
+
+            [Parameter(Mandatory)]
+            [string]$P31,
+
+            [Parameter()]
+            [string]$P32
+          )
+
+          $PSBoundParameters
+
