@@ -75,17 +75,28 @@ JeaRoles:
               [string]$ConfigurationName,
 
               [Parameter(Mandatory)]
-              [string]$Username
+              [string]$Username,
+              
+              [switch]$OnlyVisibleFunctions
           )
+          
+          if ($OnlyVisibleFunctions) {
+              $modules = Get-ModuleWithRoleCapabilities
+              $roles = Get-PSRoleCapability -ModuleBasePath $modules[0].ModuleBase
+          }
 
-          Get-PSSessionCapability -ConfigurationName $ConfigurationName -Username $Username | ForEach-Object {
-              [pscustomobject]@{
-                  Name        = $_.Name
-                  Parameters  = $_.Parameters
-                  CommandType = $_.CommandType
-                  ScriptBlock = $_.ScriptBlock
+          $result = Get-PSSessionCapability -ConfigurationName $ConfigurationName -Username $Username | ForEach-Object {
+              if ($OnlyVisibleFunctions -and $_.Name -in $roles.VisibleFunctions) {
+                  [pscustomobject]@{
+                      Name        = $_.Name
+                      Parameters  = $_.Parameters
+                      CommandType = $_.CommandType
+                      ScriptBlock = $_.ScriptBlock
+                  }
               }
           }
+          
+          $result
 
     #- Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\DemoAD.psrc
     #  ModulesToImport:
