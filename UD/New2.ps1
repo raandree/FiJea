@@ -106,15 +106,18 @@ function Get-JeaEndpoint {
         $Credential
     )
     
-    $param = @{
-        ComputerName      = $ComputerName
-        ConfigurationName = $DiscoveryEndpoint
-    }
-    if ($Credential) {
-        $param.Add('Credential', $Credential)
-    }
+    if (-not $cache:psSession -or $cache:psSession.State -ne 'Opened') {
+        $param = @{
+            ComputerName      = $ComputerName
+            ConfigurationName = $DiscoveryEndpoint
+        }
+        if ($Credential) {
+            $param.Add('Credential', $Credential)
+        }
 
-    $cache:psSession = New-PSSession @param
+        $cache:psSession = New-PSSession @param
+    }
+    
     Invoke-Command -Session $cache:psSession -ScriptBlock { Get-JeaEndpoint }
 }
 
@@ -144,13 +147,32 @@ function Get-JeaTestEndpoint {
 }
 
 function Get-JeaEndpointCapability {
+    param(
+        [Parameter(Mandatory)]
+        [string]
+        $JeaEndpointName,
+
+        [Parameter(Mandatory)]
+        [string]
+        $Username
+    )
+
+    $tasks = Invoke-Command -Session $session:psSession -ScriptBlock {
+        Get-JeaPSSessionCapability -ConfigurationName $args[0] -Username $args[1]
+    } -ArgumentList $jeaEndpoint, $Username
     
+    Set-Item -Path Session:"tasks.$JeaEndpointName" -Value $tasks
 }
 
 function Get-JeaTestEndpointCapability {
     param(
         [Parameter(Mandatory)]
-        [string]$JeaEndpointName
+        [string]
+        $JeaEndpointName,
+
+        [Parameter(Mandatory)]
+        [pscredential]
+        $Username
     )
 
     $tasks = Get-Command -CommandType Cmdlet |
@@ -215,7 +237,7 @@ function New-xTable {
             $parameterDefaultValues = Get-FunctionDefaultParameter -Scriptblock ([scriptblock]::Create($item.ScriptBlock))
 
             New-UDButton -Id "btn$JeaEndpointName" -Text $item.Name -OnClick {
-                Invoke-UDRedirect -Url "http://fi2web1:5000/RequestTest?JeaEndpointName=$jeaEndpointName"
+                Invoke-UDRedirect -Url "http://fiweb1:5000/RequestTest/Home?JeaEndpointName=$jeaEndpointName"
             }
         }
     )
@@ -234,7 +256,7 @@ function New-xWait {
     New-UDElement -Tag div -Endpoint {
         Set-Item -Path Session:"Dyn_$($JeaEndpointName)_loaded" -Value $true
         Set-Item -Path Session:"SessionData$($jeaEndpointName)" = Get-Random
-        Get-JeaTestEndpointCapability -JeaEndpointName $jeaEndpointName
+        Get-JeaEndpointCapability -JeaEndpointName $jeaEndpointName -Username $user
         Sync-UDElement -Id "Dyn_$JeaEndpointName"
     }
 }
@@ -242,9 +264,9 @@ function New-xWait {
 Import-Module -Name Universal
 $user = 'contoso\install'
 $cred = New-Object pscredential($user, ('Somepass1' | ConvertTo-SecureString -AsPlainText -Force))
-$cache:jeaServer = 'fi2web1'
+$cache:jeaServer = 'fiweb1'
 
-$cache:jeaEndpoints = Get-JeaTestEndpoint -ComputerName $cache:jeaServer
+$cache:jeaEndpoints = Get-JeaEndpoint -ComputerName $cache:jeaServer
 
 #$session:tasks."$($jeaEndpoint.Name)" = Invoke-Command -Session $session:psSession -ScriptBlock {
 #    Get-JeaPSSessionCapability -ConfigurationName $args[0] -Username $args[1]
