@@ -1,27 +1,3 @@
-function Invoke-Ternary {
-    param
-    (
-        [Parameter(Mandatory)]
-        [scriptblock]
-        $Decider,
-
-        [Parameter(Mandatory)]
-        [scriptblock]
-        $IfTrue,
-
-        [Parameter(Mandatory)]
-        [scriptblock]
-        $IfFalse
-    )
-
-    if (&$Decider) {
-        &$IfTrue
-    }
-    else {
-        &$IfFalse
-    }
-}
-
 function New-Progress {
     param(
         [string]$Text
@@ -39,107 +15,6 @@ function New-Progress {
             }
         }
     }
-}
-
-function Get-JeaEndpoint {
-    param(
-        [Parameter(Mandatory)]
-        [string]
-        $ComputerName,
-
-        [Parameter()]
-        [string]
-        $DiscoveryEndpoint = 'JeaDiscovery',
-
-        [Parameter()]
-        [pscredential]
-        $Credential
-    )
-    
-    $param = @{
-        ComputerName      = $ComputerName
-        ConfigurationName = $DiscoveryEndpoint
-        ScriptBlock       = { Get-JeaEndpoint }
-    }
-    if ($Credential) {
-        $param.Add('Credential', $Credential)
-    }
-
-    Invoke-Command @param 
-}
-
-function Get-JeaTestEndpoint {
-    param(
-        [Parameter(Mandatory)]
-        [string]
-        $ComputerName,
-
-        [Parameter()]
-        [string]
-        $DiscoveryEndpoint = 'JeaDiscovery',
-
-        [Parameter()]
-        [pscredential]
-        $Credential
-    )
-    
-    1..4 | ForEach-Object {
-        [PSCustomObject]@{ 
-            Name           = "Local$_"
-            PSComputerName = $ComputerName
-            PSVersion      = 5.1
-            Permission     = 'contoso\Domain Users AccessAllowed, contoso\Domain Computers AccessAllowed'
-        }
-    }
-}
-
-function Get-JeaEndpointCapability {
-    param(
-        [Parameter(Mandatory)]
-        [string]
-        $ComputerName,
-
-        [Parameter(Mandatory)]
-        [string]
-        $JeaEndpointName,
-
-        [Parameter(Mandatory)]
-        [string]
-        $Username,
-
-        [Parameter()]
-        [string]
-        $DiscoveryEndpoint = 'JeaDiscovery',
-
-        [Parameter()]
-        [pscredential]
-        $Credential
-    )
-
-    $param = @{
-        ComputerName      = $ComputerName
-        ConfigurationName = $DiscoveryEndpoint
-        ScriptBlock       = { Get-JeaPSSessionCapability -ConfigurationName $args[0] -Username $args[1] }
-        ArgumentList      = $JeaEndpointName, $Username
-    }
-    if ($Credential) {
-        $param.Add('Credential', $Credential)
-    }
-
-    Invoke-Command @param
-}
-
-function Get-JeaTestEndpointCapability {
-    param(
-        [Parameter(Mandatory)]
-        [string]$JeaEndpointName
-    )
-
-    Get-Command -CommandType Cmdlet |
-    Where-Object { $_.Parameters } |
-    Get-Random -Count 10 |
-    Select-Object -Property Name, Parameters, CommandType
-
 }
 
 function New-xPage {
@@ -226,6 +101,8 @@ function New-xWait {
 }
 
 Import-Module -Name Universal
+Import-Module -Name JeaDiscovery
+
 $user = 'contoso\install'
 $cred = New-Object pscredential($user, ('Somepass1' | ConvertTo-SecureString -AsPlainText -Force))
 $cache:jeaServer = 'fiweb1'
