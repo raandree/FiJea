@@ -34,7 +34,8 @@ FilesAndFolders:
               $h.Add('ModuleName', $moduleName)
               $h.Add('RoleName', $psrcFile.BaseName)
               
-              (Import-PowerShellDataFile -Path $psrcFile.FullName).GetEnumerator() | ForEach-Object {
+              #Removed Import-PowerShellDataFile as documented in https://jnury.github.io/JEA_term_not_recognized_name_cmdlet/
+              (Invoke-Expression -Command (Get-Content -Path $psrcFile.FullName -Raw)).GetEnumerator() | ForEach-Object {
                   $h.Add($_.Key, $_.Value)
               }
               [pscustomobject]$h
