@@ -188,6 +188,35 @@ FilesAndFolders:
             }
         }
 
+        function Get-FunctionParameter {
+            param(
+                [Parameter(Mandatory)]
+                [scriptblock]
+                $ScriptBlock,
+
+                [Parameter()]
+                [string]
+                $ParameterSetName
+            )
+
+            $commonParameters = [System.Management.Automation.Internal.CommonParameters].GetProperties().Name
+            
+            $guid = New-Guid
+            $f = New-Item -Path "Function:\$guid" -Value $ScriptBlock
+
+            $parameters = (Get-Command -Name $guid).Parameters
+            $parameters = $parameters.GetEnumerator() | Where-Object Key -NotIn $commonParameters
+            
+            if (-not $ParameterSetName) {
+                $parameters.GetEnumerator()
+            }
+            else {
+                $parameters.GetEnumerator() | Where-Object { $_.Value.ParameterSets.Keys -contains $ParameterSetName }
+            }
+            
+            $f | Remove-Item
+        }
+
         function Get-JeaEndpoint {
             param(
                 [Parameter(Mandatory)]
