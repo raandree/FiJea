@@ -43,7 +43,7 @@ function New-xPage {
     }
     $isloaded = "`${$($Store):$($id)_loaded}"
     New-UDPage -Name $Name -Content {
-        New-UDTypography -Text "Endpoint name: $jeaEndpointName, PID: $PID"
+        New-UDTypography -Text "Endpoint name: $jeaEndpointName | PID: $PID | Username = $user"
         New-UDDynamic -Id $id -Content {
 
             Invoke-Ternary -Decider ([scriptblock]::Create($isloaded)) -IfTrue {
@@ -72,7 +72,7 @@ function New-xTable {
 
             New-UDButton -Id "btn$JeaEndpointName_$($item.Name)" -Text $item.Name -OnClick {
                 $item = $body | ConvertFrom-Json
-                Invoke-UDRedirect -Url "http://fiweb1:5000/_JeaTask/Home?JeaEndpointName=$jeaEndpointName&TaskName=$($item.Name)"
+                Invoke-UDRedirect -Url "http://localhost/_JeaTask/Home?JeaEndpointName=$jeaEndpointName&TaskName=$($item.Name)"
             }
         }
     )
@@ -92,7 +92,7 @@ function New-xWait {
         Set-Item -Path Session:"Dyn_$($JeaEndpointName)_loaded" -Value $true
         Set-Item -Path Session:"SessionData$($jeaEndpointName)" = Get-Random
 
-        $user = 'contoso\install'
+        #$user = 'contoso\install'
         $tasks = Get-JeaEndpointCapability -JeaEndpointName $jeaEndpointName -Username $user -ComputerName $cache:jeaServer
         Set-Item -Path Session:"tasks.$JeaEndpointName" -Value $tasks
 

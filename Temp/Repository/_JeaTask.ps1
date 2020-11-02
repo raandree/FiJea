@@ -81,7 +81,6 @@ function New-xTaskForm {
                     $parameterElement = Get-UDElement -Id $parameterElementId
                     $getUDElementRetryCount--
                     Start-Sleep -Milliseconds 100
-                    #Wait-Debugger
                 }
                 $parameterName = $parameterElement.id -replace 'udElement_', ''
 
@@ -140,13 +139,12 @@ function New-xTaskForm {
     }
 }
 
-Import-Module -Name Universal
-$user = 'contoso\install'
-$cred = New-Object pscredential($user, ('Somepass1' | ConvertTo-SecureString -AsPlainText -Force))
-$cache:jeaServer = 'fiweb1'
-
 New-UDDashboard -Title "JEA Task" -Content {
     
+    $user = 'contoso\install'
+    $cred = New-Object pscredential($user, ('Somepass1' | ConvertTo-SecureString -AsPlainText -Force))
+    $cache:jeaServer = 'fiweb1'
+
     #if (-not $JeaEndpointName) {
     #    $JeaEndpointName = 'JeaDemo2'
     #}
@@ -165,6 +163,9 @@ New-UDDashboard -Title "JEA Task" -Content {
     }
 
     $parameterSets = Get-FunctionParameterSet -ScriptBlock ([scriptblock]::Create($task.ScriptBlock)) #| Select-Object -First 1
+    if (-not $parameterSets) {
+        $parameterSets = 'Default', 'Dummy'
+    }
 
     New-UDCard -Content {
         @"
@@ -173,17 +174,14 @@ New-UDDashboard -Title "JEA Task" -Content {
 "@
     }
 
-    New-UDTabs -Tabs {
+    $PID | Out-File c:\pid.txt
+    New-UDTabs -Id ParameterSetTabs -Tabs {
         foreach ($parameterSet in $parameterSets) {
-            
-            New-UDTab -Id "tab_$parameterSet" -Text $parameterSet -Content {
-                
-                $PID | Out-File c:\pid.txt
-                
-                Invoke-Expression "New-xTaskForm -ParameterSetName $parameterSet"
 
+            New-UDTab -Id "tab_$parameterSet" -Text $parameterSet -Content {                
+                Invoke-Expression "New-xTaskForm -ParameterSetName $parameterSet"
             }
         }
-    } -RenderOnActive -Id ParameterSetTabs
+    } -RenderOnActive
 
 }
