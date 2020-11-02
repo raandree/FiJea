@@ -134,7 +134,7 @@ New-UDCard -Title "Page $jeaEndpointName" -Id "PageCard"
 New-UDTypography -Text "Some random text '`$data'"
 "@
 
-    $page = New-xPage -Name "$jeaEndpointName$PID" -OnLoad ([scriptblock]::Create($onLoad)) -Finished ([scriptblock]::Create($finished)) -Store Session
+    $page = New-xPage -Name "$jeaEndpointName" -OnLoad ([scriptblock]::Create($onLoad)) -Finished ([scriptblock]::Create($finished)) -Store Session
     $page
 }
 
