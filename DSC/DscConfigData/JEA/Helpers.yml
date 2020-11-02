@@ -211,7 +211,9 @@ FilesAndFolders:
                 $parameters.GetEnumerator()
             }
             else {
-                $parameters.GetEnumerator() | Where-Object { $_.Value.ParameterSets.Keys -contains $ParameterSetName }
+                $parameters.GetEnumerator() | Where-Object {
+                    $_.Value.ParameterSets.Keys -contains $ParameterSetName -or $_.Value.ParameterSets.Keys -contains '__AllParameterSets'
+                }
             }
             
             $f | Remove-Item
