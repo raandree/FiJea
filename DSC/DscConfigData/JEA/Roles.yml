@@ -180,10 +180,11 @@ JeaRoles:
 
     - Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\Demo2.psrc
       VisibleFunctions:
-      - Set-xContent1
+      - Set-xContent
+      - Get-xContent
       - Get-ParamSetTest
       FunctionDefinitions:
-      - Name: Set-xContent1
+      - Name: Set-xContent
         ScriptBlock: |
           param (
             [Parameter()]
@@ -197,6 +198,17 @@ JeaRoles:
           )
 
           Set-Content @PSBoundParameters
+      - Name: Get-xContent
+        ScriptBlock: |
+          param (
+            [Parameter(Mandatory, ParameterSetName = 'Path')]
+            [string]$Path,
+
+            [Parameter(Mandatory, ParameterSetName = 'LiteralPath')]
+            [string]$LiteralPath
+          )
+
+          Get-Content @PSBoundParameters
       - Name: Get-ParamSetTest
         ScriptBlock: |
           [CmdletBinding(DefaultParameterSetName = 'ps1')]
@@ -224,4 +236,3 @@ JeaRoles:
           )
 
           $PSBoundParameters
-
