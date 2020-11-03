@@ -31,10 +31,7 @@ JeaEndpoints:
     - Name: JeaDiscovery
       Ensure: Present
       RoleDefinitions:
-        contoso\Domain Users:
-          RoleCapabilities:
-          - JeaCapability
-        contoso\Domain Computers:
+        NT AUTHORITY\Authenticated Users:
           RoleCapabilities:
           - JeaCapability
       SessionType: RestrictedRemoteServer
