@@ -183,6 +183,7 @@ JeaRoles:
       - Set-xContent
       - Get-xContent
       - Get-ParamSetTest
+      - Set-xCredentialsToFile
       FunctionDefinitions:
       - Name: Set-xContent
         ScriptBlock: |
@@ -190,14 +191,30 @@ JeaRoles:
             [Parameter()]
             [object[]]$Value = 'Test',
 
+            [Parameter(Mandatory, ParameterSetName = 'FileUpload')]
             [Parameter(Mandatory, ParameterSetName = 'Path')]
             [string]$Path,
 
             [Parameter(Mandatory, ParameterSetName = 'LiteralPath')]
-            [string]$LiteralPath
-          )
+            [string]$LiteralPath,
 
-          Set-Content @PSBoundParameters
+            [Parameter(Mandatory, ParameterSetName = 'FileUpload')]
+            [string]$FilePath,
+
+            [Parameter(ParameterSetName = 'FileUpload')]
+            [switch]$DoNotArchiveInputFile
+          )
+          if ($FilePath)
+          {
+            get-content $filepath | set-content $path
+            if (-not $DoNotArchiveInputFile) {
+              del $FilePath -force
+            }
+          }
+          else
+          {
+            Set-Content @PSBoundParameters
+          }
       - Name: Get-xContent
         ScriptBlock: |
           param (
@@ -205,10 +222,30 @@ JeaRoles:
             [string]$Path,
 
             [Parameter(Mandatory, ParameterSetName = 'LiteralPath')]
-            [string]$LiteralPath
+            [string]$LiteralPath,
+
+            [switch]$Raw
           )
 
           Get-Content @PSBoundParameters
+      
+      - Name: Set-xCredentialsToFile
+        ScriptBlock: |
+          param (
+            [Parameter(Mandatory, ParameterSetName = 'Path')]
+            [string]$Path,
+
+            [Parameter(Mandatory, ParameterSetName = 'LiteralPath')]
+            [string]$LiteralPath,
+
+            [Parameter()]
+            [pscredential]$Credential,
+
+            [Parameter()]
+            [System.Security.SecureString]$Password
+          )
+
+          Get-Date
       - Name: Get-ParamSetTest
         ScriptBlock: |
           [CmdletBinding(DefaultParameterSetName = 'ps1')]
