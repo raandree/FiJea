@@ -173,6 +173,7 @@ function New-xTaskForm {
     $parameters = Get-FunctionParameter -ScriptBlock ([scriptblock]::Create($task.ScriptBlock)) -ParameterSetName $ParameterSetName
     $parameterDefaultValues = Get-FunctionDefaultParameter -Scriptblock ([scriptblock]::Create($item.ScriptBlock))
     $session:parameterSetName = $ParameterSetName
+    $session:currentTask = $task
 
     New-UDDynamic -Id "dyn_$($session:parameterSetName)" -Content {
         New-UDForm -Content {
@@ -184,8 +185,43 @@ function New-xTaskForm {
                 $alParameters.AddRange(@($parameters))
                 foreach ($p in $alParameters) {
                     #Wait-Debugger
-                    $newElement = if ($p.Value.ParameterType.Name -eq 'SwitchParameter') { 
+                    $newElement = if ($p.Value.Name -eq 'FilePath' -and $ParameterSetName -eq 'FileUpload') {
+                        New-UDUpload -Text 'File Upload' -OnUpload {
+                            $Data = $Body | ConvertFrom-Json
+                            $bytes = [System.Convert]::FromBase64String($Data.Data)
+                            mkdir -Path "C:\Temp\$($session:currentTask.Name)" -Force
+                            [System.IO.File]::WriteAllBytes("C:\Temp\$($session:currentTask.Name)\$($Data.Name)", $bytes)
+                        } -Id "udElement_FilePath"
+                    }
+                    elseif ($p.Value.ParameterType.Name -eq 'SwitchParameter') { 
                         New-UDCheckBox -Id "udElement_$($p.Key)" -Label $p.Key
+                    }
+                    elseif ($p.Value.ParameterType.Name -eq 'PSCredential') {
+                        $udTextboxParam = @{
+                            Id    = "udElement_$($p.Key)_username"
+                            Label = "$($p.Key) ($($p.value.parameterType.Name)) Username"
+                            Type  = 'text'
+                        }
+
+                        if ($parameterDefaultValues.ContainsKey($p.Key)) {
+                            $udTextboxParam.Value = $parameterDefaultValues[$p.Key]
+                        }
+
+                        New-UDTextbox @udTextboxParam
+
+                        #-------------------------------------------------------------
+
+                        $udTextboxParam = @{
+                            Id    = "udElement_$($p.Key)_password"
+                            Label = "$($p.Key) ($($p.value.parameterType.Name)) Password"
+                            Type  = 'password'
+                        }
+
+                        if ($parameterDefaultValues.ContainsKey($p.Key)) {
+                            $udTextboxParam.Value = $parameterDefaultValues[$p.Key]
+                        }
+
+                        New-UDTextbox @udTextboxParam
                     }
                     else {
                         $udTextboxParam = @{
@@ -194,7 +230,7 @@ function New-xTaskForm {
                             Type  = 'text'
                         }
 
-                        if ($p.value.parameterType -eq 'System.Security.SecureString') {
+                        if ($p.value.parameterType.Name -eq 'SecureString') {
                             $udTextboxParam.Type = 'password'
                         }
 
@@ -249,6 +285,12 @@ function New-xTaskForm {
                             $param.Add($parameterName, $_.checked)
                         }
                     }
+                    { $_.type -eq 'mu-upload' } {
+                        #Wait-Debugger
+                        if ($_.value) {
+                            $param.Add($parameterName, "C:\Temp\$($session:currentTask.Name)\$($_.value.name)")
+                        }
+                    }
                 }
             }
 
@@ -282,7 +324,7 @@ function New-xTaskForm {
                         #Wait-Debugger
                         New-UDTypography -Text 'The result is:' -Variant h5
                         New-UDTypography -Text $result -Variant h5
-                    } -FullScreen
+                    } -FullWidth
                 }
             }
         } -Id "form_$ParameterSetName"

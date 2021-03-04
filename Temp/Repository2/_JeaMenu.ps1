@@ -72,7 +72,7 @@ function New-xTable {
 
             New-UDButton -Id "btn$JeaEndpointName_$($item.Name)" -Text $item.Name -OnClick {
                 $item = $body | ConvertFrom-Json
-                Invoke-UDRedirect -Url "http://localhost:5000/_JeaTask/Home?JeaEndpointName=$jeaEndpointName&TaskName=$($item.Name)"
+                Invoke-UDRedirect -Url "http://localhost:5000/_JeaTask/Home?JeaEndpointName=$jeaEndpointName&TaskName=$($item.Name)" -OpenInNewWindow
             }
         }
     )

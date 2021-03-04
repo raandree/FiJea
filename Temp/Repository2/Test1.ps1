@@ -5,4 +5,11 @@ New-UDDashboard -Title "Hello, World!" -Content {
 
     $r = Get-Content C:\param.xml -Raw
     New-UDTypography -Text $r -Variant h5
+
+    New-UDUpload -Text 'Upload Image' -OnUpload {
+        $Data = $Body | ConvertFrom-Json
+        
+        $bytes = [System.Convert]::FromBase64String($Data.Data)
+        [System.IO.File]::WriteAllBytes("$env:temp\$($Data.Name)", $bytes)
+    }
 }
