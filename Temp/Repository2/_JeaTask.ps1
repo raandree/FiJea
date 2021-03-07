@@ -1,102 +1,4 @@
-function Get-FunctionDefaultParameter {
-    <#
-    .SYNOPSIS
-    This is a function that will find all of the default parameter names and values from a given function.
-    
-    .EXAMPLE
-    PS> Get-FunctionDefaultParameter -FunctionName Get-Something
-    
-    .PARAMETER FuntionName
-    A mandatory string parameter representing the name of the function to find default parameters to.
-    
-    #>
-    [CmdletBinding()]
-    [OutputType([hashtable])]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'FunctionName')]
-        [ValidateNotNullOrEmpty()]
-        [string]$FunctionName,
-
-        [Parameter(Mandatory, ParameterSetName = 'Scriptblock')]
-        [ValidateNotNullOrEmpty()]
-        [scriptblock]$Scriptblock
-    )
-    try {
-        $ast = if ($FunctionName) {
-            (Get-Command -Name $FunctionName).ScriptBlock.Ast
-        }
-        else {
-            $Scriptblock.Ast
-        }
-        
-        if (-not $ast) {
-            return @{}
-        }
-        $select = @{ Name = 'Name'; Expression = { $_.Name.VariablePath.UserPath } },
-        @{ Name = 'Value'; Expression = { $_.DefaultValue.Extent.Text -replace "`"|'" } }
-        
-        $ht = @{ }
-        @($ast.FindAll( { $args[0] -is [System.Management.Automation.Language.ParameterAst] }, $true) | Where-Object { $_.DefaultValue } | Select-Object -Property $select).ForEach( {
-                $ht[$_.Name] = $_.Value    
-            })
-        $ht
-        
-    }
-    catch {
-        Write-Error -Message $_.Exception.Message
-    }
-}
-
-function Get-FunctionParameterSet {
-    <#
-            .SYNOPSIS
-            This is a function that will find all of the default parameter names and values from a given function.
-    
-            .EXAMPLE
-            PS> Get-FunctionDefaultParameter -FunctionName Get-Something
-    
-            .PARAMETER FuntionName
-            A mandatory string parameter representing the name of the function to find default parameters to.
-    
-    #>
-    [CmdletBinding()]
-    [OutputType([hashtable])]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'FunctionName')]
-        [ValidateNotNullOrEmpty()]
-        [string]$FunctionName,
-
-        [Parameter(Mandatory, ParameterSetName = 'Scriptblock')]
-        [ValidateNotNullOrEmpty()]
-        [scriptblock]$Scriptblock
-    )
-    try {
-        $ast = if ($FunctionName) {
-            (Get-Command -Name $FunctionName).ScriptBlock.Ast
-        }
-        else {
-            $Scriptblock.Ast
-        }
-        
-        if (-not $ast) {
-            return @{}
-        }
-        $select = @{ Name = 'Name'; Expression = { $_.Name.VariablePath.UserPath } },
-        @{ Name = 'Value'; Expression = { $_.DefaultValue.Extent.Text -replace "`"|'" } }
-        
-        $ht = @{ }
-        $params = $ast.FindAll( { $args[0] -is [System.Management.Automation.Language.ParameterAst] }, $true)
-            
-        $params | ForEach-Object { ($_.Attributes.NamedArguments | Where-Object ArgumentName -eq 'ParameterSetName').Argument.Value } | Select-Object -Unique
-    }
-    catch {
-        Write-Error -Message $_.Exception.Message
-    }
-}
-
-function New-Progress {
+﻿function New-Progress {
     param(
         [string]$Text
     )
@@ -115,66 +17,17 @@ function New-Progress {
     }
 }
 
-function Get-JeaEndpointCapability {
-    param(
-        [Parameter(Mandatory)]
-        [string]
-        $ComputerName,
-
-        [Parameter(Mandatory)]
-        [string]
-        $JeaEndpointName,
-
-        [Parameter(Mandatory)]
-        [string]
-        $Username,
-
-        [Parameter()]
-        [string]
-        $DiscoveryEndpoint = 'JeaDiscovery',
-
-        [Parameter()]
-        [pscredential]
-        $Credential
-    )
-
-    $param = @{
-        ComputerName      = $ComputerName
-        ConfigurationName = $DiscoveryEndpoint
-        ScriptBlock       = { Get-JeaPSSessionCapability -ConfigurationName $args[0] -Username $args[1] }
-        ArgumentList      = $JeaEndpointName, $Username
-    }
-    if ($Credential) {
-        $param.Add('Credential', $Credential)
-    }
-
-    Invoke-Command @param
-}
-
-function Get-JeaTestEndpointCapability {
-    param(
-        [Parameter(Mandatory)]
-        [string]$JeaEndpointName
-    )
-
-    Get-Command -CommandType Cmdlet |
-    Where-Object { $_.Parameters } |
-    Get-Random -Count 10 |
-    Select-Object -Property Name, Parameters, CommandType
-
-}
-
 function New-xTaskForm {
     param(
         [Parameter(Mandatory)]
         [string]$ParameterSetName
     )
-
+    #Wait-Debugger
     $parameters = Get-FunctionParameter -ScriptBlock ([scriptblock]::Create($task.ScriptBlock)) -ParameterSetName $ParameterSetName
     $parameterDefaultValues = Get-FunctionDefaultParameter -Scriptblock ([scriptblock]::Create($item.ScriptBlock))
     $session:parameterSetName = $ParameterSetName
     $session:currentTask = $task
-
+    #Wait-Debugger
     New-UDDynamic -Id "dyn_$($session:parameterSetName)" -Content {
         New-UDForm -Content {
             if ($Session:formProcessing) {
@@ -300,7 +153,7 @@ function New-xTaskForm {
             $adminSession = New-PSSession -ComputerName $cache:jeaServer -ConfigurationName $session:jeaEndpointName
 
             Import-PSSession -Session $adminSession | Out-Null
-        
+            #Wait-Debugger
             $result = try {
                 & $session:taskName @param -ErrorAction Stop
             }
@@ -350,7 +203,7 @@ New-UDDashboard -Title "JEA Task" -Content {
     $session:jeaEndpointName = $JeaEndpointName
     $session:taskName = $TaskName
     $session:parameterElements = New-Object System.Collections.ArrayList
-
+    #Wait-Debugger
     try {
         $task = Get-JeaEndpointCapability -ComputerName $jeaServer -JeaEndpointName $JeaEndpointName -Username $user -ErrorAction Stop | Where-Object Name -eq $TaskName
     }
@@ -369,11 +222,10 @@ New-UDDashboard -Title "JEA Task" -Content {
 
     New-UDTabs -Tabs {
         foreach ($parameterSet in $parameterSets) {
-            
+            #Wait-Debugger
             New-UDTab -Id "tab_$parameterSet" -Text $parameterSet -Content {                
                 Invoke-Expression "New-xTaskForm -ParameterSetName $parameterSet"
             }
-
         }
-    } -RenderOnActive
+    } #-RenderOnActive
 }
