@@ -37,3 +37,39 @@ JeaEndpoints:
           - Demo1
           - Demo2
       SessionType: RestrictedRemoteServer
+
+    - Name: AdManagement
+      GroupManagedServiceAccount: contoso\GMSA2
+      Ensure: Present
+      RoleDefinitions:
+        contoso\Domain Users:
+          RoleCapabilities:
+          - AdManagement
+        contoso\Domain Computers:
+          RoleCapabilities:
+          - AdManagement
+      SessionType: RestrictedRemoteServer
+
+    - Name: DhcpManagement
+      GroupManagedServiceAccount: contoso\GMSA2
+      Ensure: Present
+      RoleDefinitions:
+        contoso\Domain Users:
+          RoleCapabilities:
+          - DhcpManagement
+        contoso\Domain Computers:
+          RoleCapabilities:
+          - DhcpManagement
+      SessionType: RestrictedRemoteServer
+
+    - Name: AdTest
+      GroupManagedServiceAccount: contoso\GMSA2
+      Ensure: Present
+      RoleDefinitions:
+        contoso\Domain Users:
+          RoleCapabilities:
+          - AdTest
+        contoso\Domain Computers:
+          RoleCapabilities:
+          - AdTest
+      SessionType: RestrictedRemoteServer

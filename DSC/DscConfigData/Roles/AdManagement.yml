@@ -1,0 +1,50 @@
+Configurations:
+  - JeaRoles
+
+JeaRoles:
+  Roles:
+
+    - Path: C:\Program Files\WindowsPowerShell\Modules\Demos\RoleCapabilities\AdManagement.psrc
+      ModulesToImport:
+      - ActiveDirectory
+      - DnsServer
+      VisibleFunctions:
+      - New-xDnsRecord
+      - New-xAdUser
+      FunctionDefinitions:
+      - Name: New-xDnsRecord
+        ScriptBlock: |
+          param (
+              [Parameter(Mandatory)]
+              [string]$IPv4Address,
+              
+              [Parameter(Mandatory)]
+              [string]$Name,
+              
+              [Parameter(Mandatory)]
+              [string]$ZoneName,
+    
+              [string]$ComputerName = ((Get-ADDomainController).HostName)
+          )
+          Add-DnsServerResourceRecordA @PSBoundParameters
+      - Name: New-xAdUser
+        ScriptBlock: |
+          param (
+              [Parameter()]
+              [string]$Path = "CN=Users,$((Get-ADRootDSE).defaultNamingContext)",
+              
+              [Parameter(Mandatory)]
+              [string]$Name,
+              
+              [Parameter()]
+              [string]$GivenName,
+    
+              [Parameter()]
+              [string]$Surname,
+    
+              [Parameter(Mandatory)]
+              [securestring]$AccountPassword
+          )
+    
+          "New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname" | Out-File -FilePath C:\Commands.txt -Append
+          New-ADUser -Path $Path -AccountPassword $AccountPassword -Name $Name -GivenName $GivenName -Surname $Surname
