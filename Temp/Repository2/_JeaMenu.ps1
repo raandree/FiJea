@@ -1,4 +1,4 @@
-function New-Progress {
+﻿function New-Progress {
     param(
         [string]$Text
     )
@@ -77,7 +77,27 @@ function New-xTable {
         }
     )
 
-    $data = Get-Item -Path Session:"tasks.$JeaEndpointName"
+    #$data = Get-Item -Path Session:"tasks.$JeaEndpointName" | Select-Object -Property Name, Parameters, CommandType
+    #Wait-Debugger
+    $data = if ((Get-Item -Path Session:"tasks.$JeaEndpointName").GetType().Name -eq 'PSCustomObject') {
+        [pscustomobject]@{
+            Name        = (Get-Item -Path Session:"tasks.$JeaEndpointName").Name
+            Parameters  = (Get-Item -Path Session:"tasks.$JeaEndpointName").Parameters
+            CommandType = (Get-Item -Path Session:"tasks.$JeaEndpointName").CommandType
+            ScriptBlock = (Get-Item -Path Session:"tasks.$JeaEndpointName").ScriptBlock
+        }
+    }
+    else {
+        (Get-Item -Path Session:"tasks.$JeaEndpointName").ForEach( {
+                [pscustomobject]@{
+                    Name        = $_.Name
+                    Parameters  = $_.Parameters
+                    CommandType = $_.CommandType
+                    ScriptBlock = $_.ScriptBlock
+                }
+            })
+    }
+    #Wait-Debugger
     New-UdTable -Data $data -Columns $columns -Id "tbl$($jeaEndpoint.Name)" -Sort -Filter -Search
 }
 
