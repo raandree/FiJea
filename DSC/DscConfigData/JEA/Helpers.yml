@@ -227,10 +227,21 @@ FilesAndFolders:
             $parameters = $parameters.GetEnumerator() | Where-Object Key -NotIn $commonParameters
             
             if (-not $ParameterSetName) {
-                $parameters.GetEnumerator()
+                if ($parameters.GetType().Name -eq 'KeyValuePair`2') {
+                    $parameters
+                }
+                else {
+                    $parameters.GetEnumerator()
+                }
             }
             else {
-                $parameters.GetEnumerator() | Where-Object {
+                $p = if ($parameters.GetType().Name -eq 'KeyValuePair`2') {
+                    $parameters
+                }
+                else {
+                    $parameters.GetEnumerator()
+                }
+                $p | Where-Object {
                     $_.Value.ParameterSets.Keys -contains $ParameterSetName -or $_.Value.ParameterSets.Keys -contains '__AllParameterSets'
                 }
             }
