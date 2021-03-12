@@ -112,7 +112,7 @@ function New-xWait {
         Set-Item -Path Session:"Dyn_$($JeaEndpointName)_loaded" -Value $true
         Set-Item -Path Session:"SessionData$($jeaEndpointName)" = Get-Random
 
-        $user = 'contoso\install'
+        #$user = 'contoso\install'
         $tasks = Get-JeaEndpointCapability -JeaEndpointName $jeaEndpointName -Username $user -ComputerName $cache:jeaServer
         Set-Item -Path Session:"tasks.$JeaEndpointName" -Value $tasks
 
